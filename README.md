@@ -1,52 +1,153 @@
-# Ambr3Calendar
-A privacy-first, open-source calendar web app. All data stays on your device — no servers, no accounts, no tracking.
+<p align="center">
+  <img src="icon-192.png" alt="Seclusa Calendar" width="120" height="120">
+</p>
 
-I would always recommend using Vanadium (GrapheneOS) or Brave Browser to install PWA's for max security. Please use at your own risk, this has been vibe-coded, all code has been read before each push but always check for security flaws before using. My coding is not the best.
+
+<h1 align="center">Seclusa Calendar</h1>
+
+
+<p align="center">
+  <em>A privacy-first calendar PWA — zero tracking, no accounts, no servers.</em>
+</p>
+
+
+<p align="center">
+  <a href="LICENSE"><img alt="License: GPL-3.0" src="https://img.shields.io/badge/license-GPL--3.0-blue.svg"></a>
+  <a href="https://github.com/ambr3/SeclusaCalendar/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/ambr3/SeclusaCalendar"></a>
+  <img alt="Vanilla JS" src="https://img.shields.io/badge/built%20with-vanilla%20JS-f7df1e.svg">
+  <img alt="PWA" src="https://img.shields.io/badge/PWA-installable-6cb5e6.svg">
+  <img alt="Tests" src="https://img.shields.io/badge/tests-45%20passing-6cb5e6.svg">
+</p>
+
+
+<p align="center">
+  <a href="#features">Features</a> ·
+  <a href="#privacy">Privacy</a> ·
+  <a href="#installation">Installation</a> ·
+  <a href="#development">Development</a> ·
+  <a href="#license">License</a>
+</p>
+
 
 ---
-## Features
-
-- **Month, Week & Year views** — switch with the toolbar buttons; the month grid shows each date in its own square box.
-- **Quick jump** — tap the month/year title to jump straight to any month.
-- **Search** — find events and holidays instantly across your calendar.
-- **Events** — all-day or timed events, end time, end date, colors, descriptions.
-- **Recurring events** — daily, weekly, monthly, yearly, with custom intervals and an end date.
-- **Multi-day events** — spanning events show on every day they cover.
-- **Drag & drop** — move events between days by dragging the colored pill.
-- **Reminders** — optional browser notifications before an event (enable in Settings).
-- **Holidays & important dates** — toggle countries and special dates from the Holidays panel.
-- **Week start + language settings** — choose Sunday/Monday start and English, Français, Deutsch, Español, Italiano, Nederlands, Português, Türkçe, Српски / Srpski.
-- **Backup & restore** — export/import your data as JSON or standard iCal (.ics), so it stays portable and safe.
-- **Dark & light themes** — with an animated glassmorphism look.
-
-## Privacy & Security
-
-- **100% local** — everything is stored in your browser's localStorage. Nothing is ever sent to a server.
-- **No cookies, no trackers, no third-party code** — not even Google Fonts; only the system font stack.
-- **No network capability** — the app's Content-Security-Policy sets `connect-src 'none'`, so the page cannot make network requests at all.
-- **Hardened headers/meta** — strict CSP, `no-referrer`, and a Permissions-Policy that disables camera, microphone, geolocation, payment, clipboard, sensors and more.
-- **Clickjacking** — the CSP meta tag cannot enforce `frame-ancestors 'none'`; browsers ignore it in `<meta>`. The hosting server must send `X-Frame-Options: DENY` (and/or a `frame-ancestors 'none'` CSP header). A sample [`.htaccess`](.htaccess) is included for Apache hosts.
-- **Warning** — because data lives only in the browser, clearing the browser cache/site data deletes your events. Export a backup regularly.
-
-## PWA
-
-- Installable on Android, iOS, and desktop (manifest + icons, standalone display).
-- Works offline thanks to the service worker — cached assets are served when there's no connection.
-- Fullscreen/standalone mode with safe-area support for notched phones.
 
 
-- Each date now sits in its own square box with a visible border; the calendar card auto-sizes to fit.
-- Bigger fonts, larger touch targets, and bigger toolbar/action buttons for mobile use.
-- Settings hint now warns that clearing the browser cache/site data deletes local events.
+*Seclusa* — from the Latin meaning "private", "secluded", or "set apart" — keeps your calendar your own. Seclusa Calendar is a **pure static, open-source calendar app**. Everything runs in your browser: your events, settings, and preferences live only on your device's localStorage, and the app **cannot make a single network request** (its Content-Security-Policy sets `connect-src 'none'`). Installable, offline-capable, and auditable end-to-end.
 
 
-## License
-
-Ambr3Calendar is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License as published by the Free Software Foundation, version 3 of the License** (or, at your option, any later version).
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the [GNU General Public License v3](LICENSE) for details.
-
-You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+---
 
 
+## ✨ Features
 
+
+### 📅 Views & Navigation
+- **Month, Week & Year views** — switch with the toolbar buttons; the month grid shows each date in its own square box
+- **Quick jump** — tap the month/year title to jump straight to any month
+- **Swipe & keyboard** — swipe the calendar to change month; arrow keys move between periods
+- **Today** — one tap returns you to today, highlighted and marked
+
+
+### 📝 Events
+- **Rich events** — all-day or timed, with end time, end date, colors, and descriptions
+- **Recurring events** — daily, weekly, monthly, yearly, with custom intervals and an end date
+- **Multi-day events** — spanning events show on every day they cover
+- **Drag & drop** — move events between days by dragging the colored pill
+- **Reminders** — optional browser notifications before an event (opt-in in Settings)
+
+
+### 🌍 Holidays & Dates
+- **Holidays** — toggle countries (UK, US, Canada, Ireland, Germany, France, Spain, Italy, Netherlands, Belgium, Switzerland, Austria, Portugal, China, South Korea, India, Brazil …) from the Holidays panel
+- **Special dates** — Valentine's, Halloween, Mother's/Father's Day, New Year's Eve and more
+- **Search** — find events and holidays instantly across your calendar
+
+
+### 🎨 Interface
+- **Dark / light themes** with a glassmorphism look and a baby-blue accent
+- **Week start + 10 languages** — Sunday/Monday start and English, Français, Deutsch, Español, Italiano, Nederlands, Português, Türkçe, Српски / Srpski
+- **Backup & restore** — export/import your data as JSON or standard iCal (.ics), fully portable
+- Smooth fade-in animations, fully responsive, large touch targets
+
+
+---
+
+
+## 🔒 Privacy
+
+
+Your data is your business. That's the whole point.
+
+
+| | |
+|---|---|
+| 🚫 **Zero tracking** | No analytics, no cookies, no fingerprinting, no third-party scripts |
+| 🖥️ **No server** | Pure static site — nothing runs on a server |
+| 🔑 **No accounts or keys** | Open it and use it — no sign-up, ever |
+| 🏠 **Stays on device** | Events, settings, and preferences live only in your browser's localStorage |
+| 🚫 **Nothing leaves** | The CSP sets `connect-src 'none'` — the app cannot make any network request at all |
+| 🚫 **No hidden sharing** | No outbound connection, ever — not even for a weather API or map tiles |
+| 🧭 **No geolocation** | The app never asks for it; Permissions-Policy disables it |
+| 🔔 **Notifications opt-in** | Reminder alerts only after you grant permission — off by default |
+| 🛡️ **Locked-down security** | Camera, microphone, motion sensors, and payment are all blocked |
+| 🖼️ **Can't be embedded** | Best-effort clickjacking protection; a sample `.htaccess` sends `X-Frame-Options: DENY` on Apache |
+| 📜 **Open source** | GPL-3.0 — read every line |
+
+
+> ⚠️ **Backup note:** because data lives only in the browser, clearing your browser cache/site data deletes your events. Export a JSON backup regularly — the app is a calendar, not a database.
+
+
+---
+
+
+## 📦 Installation
+
+
+### Use it
+Open the app (live site or `index.html` directly) and install it as a PWA:
+
+
+1. Open the site
+2. Tap **Install** / **Add to Home screen**
+3. Done — it works offline too
+
+
+> 💡 Want maximum security? On Android use a hardened browser like **Vanadium (GrapheneOS)** or **Brave** for any PWA.
+
+
+---
+
+
+## 💻 Development
+
+
+```bash
+npm install     # dev dependencies (eslint, prettier, vitest)
+npm test        # run the test suite (45 tests, node-only — no browser needed)
+npm run check   # lint + format check + tests
+```
+
+
+- **No build step** — the app is a single classic script (`js/app.js`) loaded directly by `index.html`. ES modules are deliberately avoided so it runs straight from `file://`, no server required
+- All code lives in `index.html`, `css/theme.css`, `js/app.js`, `sw.js`, `manifest.json`, and the icons
+- Tests load the real `js/app.js` in a `vm` sandbox and exercise the logic via `globalThis.__SECLUSA_CORE__`
+
+
+---
+
+
+## ⚠️ Disclaimer
+
+
+> This project was **vibe-coded**. All code is reviewed before each release, but it's still recommended to audit for security flaws before use, especially when self-hosting. Use at your own risk.
+
+
+---
+
+
+## 📄 License
+
+
+[GPL-3.0](LICENSE) — free to use, modify, and share, with the same freedom preserved for derivatives.
+
+
+---

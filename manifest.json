@@ -1,8 +1,8 @@
 {
-  "name": "Ambr3Calendar",
-  "short_name": "Ambr3Calendar",
-  "id": "ambr3-calendar",
-  "version": "0.4.6",
+  "name": "Seclusa Calendar",
+  "short_name": "Seclusa",
+  "id": "seclusa-calendar",
+  "version": "0.5.0",
   "lang": "en",
   "dir": "ltr",
   "description": "A 100% private calendar. All data stays on your device — no accounts, no servers, no tracking.",
@@ -11,8 +11,8 @@
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
-  "background_color": "#ede9fe",
-  "theme_color": "#ede9fe",
+  "background_color": "#cfe6f7",
+  "theme_color": "#cfe6f7",
   "categories": ["productivity", "utilities"],
   "prefer_related_applications": false,
   "icons": [

@@ -1,0 +1,26 @@
+{
+  "name": "seclusa-calendar",
+  "version": "0.5.0",
+  "description": "A 100% private, privacy-first calendar PWA. All data stays on your device — no accounts, no servers, no tracking.",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint js/",
+    "lint:fix": "eslint js/ --fix",
+    "format": "prettier --write \"js/**/*.js\" \"index.html\" \"css/**/*.css\"",
+    "format:check": "prettier --check \"js/**/*.js\" \"index.html\" \"css/**/*.css\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev": "vite --host --port 3000",
+    "preview": "vite preview --host --port 3000",
+    "check": "npm run lint && npm run format:check && npm run test"
+  },
+  "keywords": ["calendar", "privacy", "pwa", "offline"],
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@eslint/js": "^9.30.0",
+    "eslint": "^9.30.0",
+    "prettier": "^3.5.0",
+    "vite": "^7.0.0",
+    "vitest": "^3.0.0"
+  }
+}
