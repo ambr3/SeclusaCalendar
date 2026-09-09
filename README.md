@@ -24,7 +24,6 @@
   <a href="#features">Features</a> ·
   <a href="#privacy">Privacy</a> ·
   <a href="#installation">Installation</a> ·
-  <a href="#development">Development</a> ·
   <a href="#license">License</a>
 </p>
 
@@ -112,24 +111,6 @@ Open the app (live site or `index.html` directly) and install it as a PWA:
 
 
 > 💡 Want maximum security? On Android use a hardened browser like **Vanadium (GrapheneOS)** or **Brave** for any PWA.
-
-
----
-
-
-## 💻 Development
-
-
-```bash
-npm install     # dev dependencies (eslint, prettier, vitest)
-npm test        # run the test suite (45 tests, node-only — no browser needed)
-npm run check   # lint + format check + tests
-```
-
-
-- **No build step** — the app is a single classic script (`js/app.js`) loaded directly by `index.html`. ES modules are deliberately avoided so it runs straight from `file://`, no server required
-- All code lives in `index.html`, `css/theme.css`, `js/app.js`, `sw.js`, `manifest.json`, and the icons
-- Tests load the real `js/app.js` in a `vm` sandbox and exercise the logic via `globalThis.__SECLUSA_CORE__`
 
 
 ---
