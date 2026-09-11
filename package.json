@@ -1,6 +1,6 @@
 {
   "name": "seclusa-calendar",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "A 100% private, privacy-first calendar PWA. All data stays on your device — no accounts, no servers, no tracking.",
   "type": "module",
   "scripts": {
