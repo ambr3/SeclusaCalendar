@@ -30,7 +30,10 @@
     <div id="app">
       <div id="brand">
         <img class="brand-logo" src="icon-192.png" alt="" width="48" height="48" />
-        <div class="brand-name">Seclusa Calendar</div>
+        <div class="brand-text">
+          <div class="brand-name">Seclusa Calendar</div>
+          <div class="brand-motto">Latin for &ldquo;private, set apart, secluded&rdquo;</div>
+        </div>
       </div>
       <header>
         <button id="prev-month" aria-label="Previous period">&#8249;</button>
@@ -53,6 +56,14 @@
           <button id="holidays-btn" title="Holidays &amp; Important Dates">
             <span class="toolbar-icon">&#127760;</span>
             <span class="toolbar-label">Holidays</span>
+          </button>
+          <button id="countdowns-btn" title="Countdowns">
+            <span class="toolbar-icon">&#9203;</span>
+            <span class="toolbar-label">Countdowns</span>
+          </button>
+          <button id="birthdays-btn" title="Birthdays">
+            <span class="toolbar-icon">&#127874;</span>
+            <span class="toolbar-label">Birthdays</span>
           </button>
           <div class="view-switch" role="tablist" aria-label="Calendar view">
             <button class="view-btn active" data-view="month" role="tab" aria-selected="true">Month</button>
@@ -102,6 +113,51 @@
         <div class="holidays-section">
           <h3 class="section-title">Country Holidays</h3>
           <div id="holidays-country-list"></div>
+        </div>
+      </div>
+
+      <div id="countdowns-panel" class="hidden" role="dialog" aria-label="Countdowns" aria-modal="true">
+        <div class="panel-header">
+          <h2>Countdowns</h2>
+          <button id="close-countdowns-panel" aria-label="Close">&times;</button>
+        </div>
+        <div class="panel-scroll">
+          <div class="holidays-section">
+            <h3 class="section-title">Days to go</h3>
+            <p id="countdown-presets-hint" class="section-hint">Classic dates, always in view.</p>
+            <div id="countdown-presets-list"></div>
+          </div>
+          <div class="holidays-section">
+            <h3 class="section-title">My countdowns</h3>
+            <p id="countdown-custom-hint" class="section-hint">Your own occasions — stored only on this device.</p>
+            <div id="countdown-custom-list"></div>
+            <form id="countdown-form" class="countdown-form">
+              <input
+                type="text"
+                id="countdown-name"
+                placeholder="Name (e.g. Summer holiday)"
+                maxlength="40"
+                autocomplete="off"
+              />
+              <input type="date" id="countdown-date" />
+              <label class="countdown-yearly">
+                <input type="checkbox" id="countdown-yearly" checked />
+                Happens every year
+              </label>
+              <button type="submit" class="primary">Add countdown</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div id="birthdays-panel" class="hidden" role="dialog" aria-label="Birthdays" aria-modal="true">
+        <div class="panel-header">
+          <h2>Birthdays</h2>
+          <button id="close-birthdays-panel" aria-label="Close">&times;</button>
+        </div>
+        <div class="panel-scroll">
+          <p id="birthdays-empty" class="section-hint"></p>
+          <div id="birthdays-list"></div>
         </div>
       </div>
 
@@ -310,6 +366,11 @@
                 <label for="recurrence-end">Until</label>
                 <input type="date" id="recurrence-end" />
               </div>
+
+              <label class="birthday-form-row">
+                <input type="checkbox" id="event-birthday" />
+                <span>This is a birthday</span>
+              </label>
 
               <label>Color</label>
               <div id="color-picker">

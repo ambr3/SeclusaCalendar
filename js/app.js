@@ -274,6 +274,7 @@
       dragEvent: null,
       notifiedEvents: {},
       editingKey: null,
+      countdowns: [],
     };
   }
 
@@ -302,6 +303,7 @@
     }
     if (ev.holiday) e.holiday = true;
     if (ev.important) e.important = true;
+    if (ev.birthday) e.birthday = true;
     if (ev.country) e.country = String(ev.country).slice(0, 100);
     return e;
   }
@@ -460,6 +462,56 @@
     const e = getEaster(year);
     e.setDate(e.getDate() - 2);
     return e;
+  }
+
+  // ===== COUNTDOWNS & BIRTHDAYS =====
+  const COUNTDOWN_STORAGE_KEY = 'privacy_calendar_countdowns';
+
+  const PRESET_COUNTDOWNS = [
+    { id: 'new_year', name: "New Year's Day", month: 1, day: 1 },
+    { id: 'valentines', name: "Valentine's Day", month: 2, day: 14 },
+    { id: 'good_friday', name: 'Good Friday', easter: -2 },
+    { id: 'easter', name: 'Easter Sunday', easter: 0 },
+    { id: 'halloween', name: 'Halloween', month: 10, day: 31 },
+    { id: 'christmas', name: 'Christmas Day', month: 12, day: 25 },
+    { id: 'new_years_eve', name: "New Year's Eve", month: 12, day: 31 },
+  ];
+
+  function getEasterKey(year) {
+    const d = getEaster(year);
+    return dateKey(year, d.getMonth(), d.getDate());
+  }
+
+  function nextAnnualDate(month, day, todayKey) {
+    const t = parseDateKey(todayKey);
+    const from = t.getFullYear();
+    for (let y = from; y <= from + 1; y++) {
+      const lastDay = new Date(y, month, 0).getDate();
+      const d = Math.min(day, lastDay);
+      const cand = dateKey(y, month - 1, d);
+      if (cand >= todayKey) return cand;
+    }
+    return null;
+  }
+
+  function resolvePresetNextDate(preset, todayKey) {
+    if (preset.easter != null) {
+      const t = parseDateKey(todayKey);
+      const from = t.getFullYear();
+      for (let y = from; y <= from + 1; y++) {
+        const cand = addDaysKey(getEasterKey(y), preset.easter);
+        if (cand >= todayKey) return cand;
+      }
+      return null;
+    }
+    return nextAnnualDate(preset.month, preset.day, todayKey);
+  }
+
+  function daysToGoLabel(days) {
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Tomorrow';
+    if (days < 0) return 'Passed';
+    return `${days} days`;
   }
 
   function firstMonday(year, month) {
@@ -2593,6 +2645,7 @@
     setEventColor('#6cb5e6');
     timeValues['event-time'] = '';
     timeValues['event-end-time'] = '';
+    document.getElementById('event-birthday').checked = false;
 
     if (eventId) {
       document.getElementById('modal-title').textContent = 'Edit Event';
@@ -2619,6 +2672,7 @@
           document.getElementById('recurrence-end').value = ev.recurrence.endDate || '';
           showRecurrenceOptions(ev.recurrence.frequency);
         }
+        document.getElementById('event-birthday').checked = ev.birthday === true;
       }
     } else {
       document.getElementById('modal-title').textContent = 'New Event';
@@ -2694,6 +2748,7 @@
       desc: document.getElementById('event-desc').value.trim(),
       color: document.getElementById('event-color').value,
       recurrence,
+      birthday: document.getElementById('event-birthday').checked || undefined,
     });
     if (!ev) return;
 
@@ -2803,6 +2858,204 @@
       });
       container.appendChild(item);
     }
+  }
+
+  // ===== COUNTDOWNS PANEL =====
+  function renderCountdownsPanel(state, helpers) {
+    const { monthName } = helpers;
+    const todayKey = getTodayKey();
+    const presets = document.getElementById('countdown-presets-list');
+    const customs = document.getElementById('countdown-custom-list');
+    presets.innerHTML = '';
+    customs.innerHTML = '';
+
+    for (const preset of PRESET_COUNTDOWNS) {
+      const next = resolvePresetNextDate(preset, todayKey);
+      if (!next) continue;
+      const d = parseDateKey(next);
+      const item = document.createElement('div');
+      item.className = 'countdown-item';
+      const info = document.createElement('div');
+      info.className = 'countdown-info';
+      const name = document.createElement('div');
+      name.className = 'countdown-name';
+      name.textContent = preset.name;
+      info.appendChild(name);
+      const date = document.createElement('div');
+      date.className = 'countdown-date';
+      date.textContent = `${d.getDate()} ${monthName(d.getMonth())} ${d.getFullYear()}`;
+      info.appendChild(date);
+      item.appendChild(info);
+      const badge = countdownBadge(dayOffset(todayKey, next));
+      const badgeEl = document.createElement('div');
+      badgeEl.className = 'countdown-days' + badge.cls;
+      badgeEl.textContent = badge.text;
+      item.appendChild(badgeEl);
+      presets.appendChild(item);
+    }
+
+    const sorted = state.countdowns
+      .map((cd) => ({ cd, target: countdownTargetDate(cd, todayKey) }))
+      .sort((a, b) => dayOffset(todayKey, a.target) - dayOffset(todayKey, b.target));
+    if (!sorted.length) {
+      const hint = document.createElement('div');
+      hint.className = 'section-hint';
+      hint.textContent = 'Add your own occasions above — trips, deadlines, holidays.';
+      customs.appendChild(hint);
+    }
+    for (const { cd, target } of sorted) {
+      const d = parseDateKey(target);
+      const days = dayOffset(todayKey, target);
+      const item = document.createElement('div');
+      item.className = 'countdown-item';
+      const info = document.createElement('div');
+      info.className = 'countdown-info';
+      const name = document.createElement('div');
+      name.className = 'countdown-name';
+      name.textContent = cd.name;
+      info.appendChild(name);
+      const date = document.createElement('div');
+      date.className = 'countdown-date';
+      date.textContent = `${d.getDate()} ${monthName(d.getMonth())} ${d.getFullYear()}`;
+      info.appendChild(date);
+      item.appendChild(info);
+      const badge = countdownBadge(days);
+      const badgeEl = document.createElement('div');
+      badgeEl.className = 'countdown-days' + badge.cls;
+      badgeEl.textContent = badge.text;
+      item.appendChild(badgeEl);
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'countdown-delete';
+      del.dataset.id = cd.id;
+      del.setAttribute('aria-label', `Delete ${cd.name}`);
+      del.textContent = '\u00d7';
+      item.appendChild(del);
+      customs.appendChild(item);
+    }
+  }
+
+  function openCountdownsPanel(state, helpers) {
+    document.getElementById('event-panel').classList.add('hidden');
+    document.getElementById('event-modal').classList.add('hidden');
+    renderCountdownsPanel(state, helpers);
+    document.getElementById('countdowns-panel').classList.remove('hidden');
+    document.getElementById('countdowns-btn').classList.add('active');
+  }
+
+  function closeCountdownsPanel() {
+    document.getElementById('countdowns-panel').classList.add('hidden');
+    document.getElementById('countdowns-btn').classList.remove('active');
+  }
+
+  // ===== BIRTHDAYS PANEL =====
+  function renderBirthdaysPanel(state, helpers) {
+    const { monthName } = helpers;
+    const todayKey = getTodayKey();
+    const list = document.getElementById('birthdays-list');
+    const emptyEl = document.getElementById('birthdays-empty');
+    list.innerHTML = '';
+    const bdays = collectBirthdays(state, todayKey);
+    emptyEl.textContent = bdays.length
+      ? ''
+      : 'No birthdays yet. Check "This is a birthday" when adding an event, or create a yearly repeating event.';
+    for (const { ev, next, days } of bdays) {
+      const d = parseDateKey(next);
+      const item = document.createElement('div');
+      item.className = 'birthday-item';
+      const bar = document.createElement('div');
+      bar.className = 'event-color-bar';
+      bar.style.background = ev.color || '#6cb5e6';
+      item.appendChild(bar);
+      const info = document.createElement('div');
+      info.className = 'birthday-info';
+      const name = document.createElement('div');
+      name.className = 'birthday-name';
+      name.textContent = ev.title;
+      info.appendChild(name);
+      const date = document.createElement('div');
+      date.className = 'countdown-date';
+      date.textContent = `${d.getDate()} ${monthName(d.getMonth())}`;
+      info.appendChild(date);
+      item.appendChild(info);
+      const badge = countdownBadge(days);
+      const badgeEl = document.createElement('div');
+      badgeEl.className = 'countdown-days' + badge.cls;
+      badgeEl.textContent = badge.text;
+      item.appendChild(badgeEl);
+      item.addEventListener('click', () => {
+        closeBirthdaysPanel();
+        openModal(state, helpers, next, ev.id);
+      });
+      list.appendChild(item);
+    }
+  }
+
+  function openBirthdaysPanel(state, helpers) {
+    document.getElementById('event-panel').classList.add('hidden');
+    document.getElementById('event-modal').classList.add('hidden');
+    renderBirthdaysPanel(state, helpers);
+    document.getElementById('birthdays-panel').classList.remove('hidden');
+    document.getElementById('birthdays-btn').classList.add('active');
+  }
+
+  function closeBirthdaysPanel() {
+    document.getElementById('birthdays-panel').classList.add('hidden');
+    document.getElementById('birthdays-btn').classList.remove('active');
+  }
+
+  function loadCountdowns(state) {
+    try {
+      const raw = safeGet(COUNTDOWN_STORAGE_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      state.countdowns = Array.isArray(arr)
+        ? arr
+            .filter((x) => x && typeof x === 'object' && /^\d{4}-\d{2}-\d{2}$/.test(String(x.date || '')))
+            .map((x) => ({
+              id: String(x.id || safeId()).slice(0, 100),
+              name: String(x.name || '').slice(0, 40),
+              date: x.date,
+              yearly: x.yearly !== false,
+            }))
+            .slice(0, 50)
+        : [];
+    } catch {
+      state.countdowns = [];
+    }
+  }
+
+  function saveCountdowns(state) {
+    safeSet(COUNTDOWN_STORAGE_KEY, JSON.stringify(state.countdowns));
+  }
+
+  function countdownTargetDate(cd, todayKey) {
+    if (!cd.yearly) return cd.date;
+    const d = parseDateKey(cd.date);
+    return nextAnnualDate(d.getMonth() + 1, d.getDate(), todayKey);
+  }
+
+  function collectBirthdays(state, todayKey) {
+    const out = [];
+    const seen = new Set();
+    for (const [key, evs] of Object.entries(state.events)) {
+      for (const ev of evs) {
+        if (seen.has(ev.id)) continue;
+        const isBirthday = ev.birthday || (ev.recurrence && ev.recurrence.frequency === 'yearly');
+        if (!isBirthday) continue;
+        seen.add(ev.id);
+        const d = parseDateKey(key);
+        const next = nextAnnualDate(d.getMonth() + 1, d.getDate(), todayKey);
+        if (!next) continue;
+        out.push({ ev, key, next, days: dayOffset(todayKey, next) });
+      }
+    }
+    out.sort((a, b) => a.days - b.days);
+    return out;
+  }
+
+  function countdownBadge(days) {
+    const cls = days === 0 ? ' today' : days === 1 ? ' tomorrow' : days < 0 ? ' passed' : '';
+    return { text: daysToGoLabel(days), cls };
   }
 
   function openSettings(_state) {
@@ -3009,6 +3262,8 @@
     const settingsModal = document.getElementById('settings-modal');
     const searchOverlay = document.getElementById('search-overlay');
     const holidaysPanel = document.getElementById('holidays-panel');
+    const countdownsPanel = document.getElementById('countdowns-panel');
+    const birthdaysPanel = document.getElementById('birthdays-panel');
     const deleteBtn = document.getElementById('delete-event-btn');
     const eventForm = document.getElementById('event-form');
     const todayBtn = document.getElementById('today-btn');
@@ -3087,6 +3342,55 @@
       }
     });
     document.getElementById('close-holidays-panel').addEventListener('click', closeHolidaysPanel);
+
+    document.getElementById('countdowns-btn').addEventListener('click', () => {
+      if (countdownsPanel.classList.contains('hidden')) {
+        openCountdownsPanel(state, makeHelpers(state));
+      } else {
+        closeCountdownsPanel();
+      }
+    });
+    document.getElementById('close-countdowns-panel').addEventListener('click', closeCountdownsPanel);
+    document.getElementById('countdown-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nameInput = document.getElementById('countdown-name');
+      const dateInput = document.getElementById('countdown-date');
+      const name = nameInput.value.trim();
+      const date = dateInput.value;
+      if (!name || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+      state.countdowns.push({ id: safeId(), name, date, yearly: document.getElementById('countdown-yearly').checked });
+      saveCountdowns(state);
+      nameInput.value = '';
+      dateInput.value = '';
+      renderCountdownsPanel(state, makeHelpers(state));
+    });
+    document.getElementById('countdown-custom-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.countdown-delete');
+      if (!btn) return;
+      state.countdowns = state.countdowns.filter((c) => c.id !== btn.dataset.id);
+      saveCountdowns(state);
+      renderCountdownsPanel(state, makeHelpers(state));
+    });
+
+    document.getElementById('birthdays-btn').addEventListener('click', () => {
+      if (birthdaysPanel.classList.contains('hidden')) {
+        openBirthdaysPanel(state, makeHelpers(state));
+      } else {
+        closeBirthdaysPanel();
+      }
+    });
+    document.getElementById('close-birthdays-panel').addEventListener('click', closeBirthdaysPanel);
+
+    document.getElementById('event-birthday').addEventListener('change', (e) => {
+      const recurrence = document.getElementById('event-recurrence');
+      if (e.target.checked && recurrence.value !== 'yearly') {
+        recurrence.value = 'yearly';
+        document.getElementById('recurrence-interval').value = '1';
+        const unitSpan = document.getElementById('recurrence-unit');
+        unitSpan.textContent = 'year(s)';
+        document.getElementById('recurrence-options').classList.remove('hidden');
+      }
+    });
 
     document.getElementById('event-recurrence').addEventListener('change', (e) => {
       const container = document.getElementById('recurrence-options');
@@ -3207,6 +3511,14 @@
         if (e.key === 'Escape') closeHolidaysPanel();
         return;
       }
+      if (!countdownsPanel.classList.contains('hidden')) {
+        if (e.key === 'Escape') closeCountdownsPanel();
+        return;
+      }
+      if (!birthdaysPanel.classList.contains('hidden')) {
+        if (e.key === 'Escape') closeBirthdaysPanel();
+        return;
+      }
       if (!eventPanel.classList.contains('hidden')) {
         if (e.key === 'Escape') {
           eventPanel.classList.add('hidden');
@@ -3230,6 +3542,7 @@
     loadAppName(state);
     loadSettings(state, LANGS);
     loadEvents(state);
+    loadCountdowns(state);
     loadHolidayPreference(state, COUNTRY_META, IMPORTANT_DATES_META);
     buildJumpOptions(state, makeHelpers(state));
     populateSettings(state);
@@ -3262,6 +3575,11 @@
       IMPORTANT_DATES_META,
       icsEscape,
       icsUnescape,
+      PRESET_COUNTDOWNS,
+      getEasterKey,
+      nextAnnualDate,
+      resolvePresetNextDate,
+      daysToGoLabel,
     });
   }
 })();

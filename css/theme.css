@@ -127,6 +127,21 @@ body {
   color: var(--text-muted);
 }
 
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.brand-motto {
+  font-size: 0.62rem;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
 /* ===== HEADER ===== */
 header {
   position: relative;
@@ -452,7 +467,9 @@ header button:active {
 
 /* ===== BOTTOM PANELS ===== */
 #holidays-panel,
-#event-panel {
+#event-panel,
+#countdowns-panel,
+#birthdays-panel {
   position: fixed;
   bottom: 0;
   left: 50%;
@@ -473,12 +490,16 @@ header button:active {
 }
 
 [data-theme='dark'] #holidays-panel,
-[data-theme='dark'] #event-panel {
+[data-theme='dark'] #event-panel,
+[data-theme='dark'] #countdowns-panel,
+#birthdays-panel {
   background: var(--glass-strong);
 }
 
 #holidays-panel::before,
-#event-panel::before {
+#event-panel::before,
+#countdowns-panel::before,
+#birthdays-panel::before {
   content: '';
   display: block;
   width: 40px;
@@ -509,6 +530,8 @@ header button:active {
 #close-panel,
 #close-modal,
 #close-holidays-panel,
+#close-countdowns-panel,
+#close-birthdays-panel,
 #close-search,
 #close-settings {
   background: var(--glass-faint);
@@ -528,6 +551,8 @@ header button:active {
 #close-panel:hover,
 #close-modal:hover,
 #close-holidays-panel:hover,
+#close-countdowns-panel:hover,
+#close-birthdays-panel:hover,
 #close-search:hover,
 #close-settings:hover {
   background: var(--danger);
@@ -599,6 +624,192 @@ header button:active {
   font-size: 1rem;
   width: 30px;
   text-align: center;
+}
+
+/* ===== COUNTDOWNS & BIRTHDAYS ===== */
+#countdowns-panel .panel-scroll,
+#birthdays-panel .panel-scroll {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.section-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 0 0 6px;
+}
+
+.countdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+
+.countdown-item:hover {
+  background: var(--glass-faint);
+}
+
+.countdown-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.countdown-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.countdown-date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.countdown-days {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  background: var(--glass-faint);
+  border: 1px solid var(--glass-border);
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.countdown-days.today {
+  background: var(--primary-grad);
+  color: var(--on-primary);
+  border: none;
+}
+
+.countdown-days.tomorrow {
+  color: var(--primary);
+}
+
+.countdown-days.passed {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.countdown-delete {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 999px;
+  transition: all 0.15s;
+}
+
+.countdown-delete:hover {
+  color: var(--danger);
+  background: var(--glass-faint);
+}
+
+.countdown-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--glass-faint);
+  border: 1px solid var(--glass-border);
+}
+
+.countdown-form input[type='text'],
+.countdown-form input[type='date'] {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-strong);
+  color: var(--text);
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.countdown-yearly {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.countdown-form .primary {
+  align-self: flex-start;
+}
+
+.birthday-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.birthday-item:hover {
+  background: var(--glass-faint);
+  transform: translateX(2px);
+}
+
+.birthday-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.birthday-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.countdown-form input[type='text']:focus,
+.countdown-form input[type='date']:focus {
+  outline: 2px solid var(--primary-grad);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+.birthday-form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--glass-faint);
+  border: 1px solid var(--glass-border);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.birthday-form-row:hover {
+  background: var(--glass);
+}
+
+.birthday-form-row input[type='checkbox'] {
+  accent-color: var(--accent-color, #6cb5e6);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
 }
 
 .country-toggle {
@@ -1258,7 +1469,9 @@ header button:active {
 }
 
 #event-panel:not(.hidden),
-#holidays-panel:not(.hidden) {
+#holidays-panel:not(.hidden),
+#countdowns-panel:not(.hidden),
+#birthdays-panel:not(.hidden) {
   animation: slideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 

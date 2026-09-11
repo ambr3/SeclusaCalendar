@@ -90,6 +90,11 @@ describe('sanitizeEvent', () => {
     });
   });
 
+  it('preserves the birthday flag', () => {
+    expect(sanitizeEvent({ id: 'x', title: 'Sam', birthday: true }).birthday).toBe(true);
+    expect(sanitizeEvent({ id: 'x', title: 'Sam' }).birthday).toBeUndefined();
+  });
+
   it('generates an id when none is provided', () => {
     const ev = sanitizeEvent({ title: 'T' });
     expect(ev.id).toBeTruthy();
