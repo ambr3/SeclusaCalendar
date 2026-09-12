@@ -24,7 +24,7 @@
     <link rel="manifest" href="manifest.json" />
     <link rel="icon" href="icon-192.png" type="image/png" />
     <link rel="apple-touch-icon" href="icon-192.png" />
-    <link rel="stylesheet" href="css/theme.css?v=24" />
+    <link rel="stylesheet" href="css/theme.css?v=25" />
   </head>
   <body>
     <div id="app">
@@ -203,9 +203,13 @@
               <button id="export-json-btn" class="primary">Export as JSON</button>
               <button id="export-ics-btn" class="primary">Export as iCal (.ics)</button>
             </div>
+            <p class="settings-hint">In supported browsers (Chrome/Edge), the first export asks where to save; later exports update the same file automatically.</p>
             <div class="settings-row">
               <button id="import-json-btn">Import JSON</button>
               <button id="import-ics-btn">Import iCal (.ics)</button>
+            </div>
+            <div class="settings-row">
+              <button id="clear-all-data-btn" class="danger">Delete all data</button>
             </div>
             <p class="settings-hint">
               All data is stored locally on your device &mdash; nothing is ever sent to a server.
@@ -435,12 +439,12 @@
       </div>
 
       <footer id="privacy-note">
-        Made with ❤️ 🇬🇧 &middot; v0.6.0 &middot; 100% private, all data stays on your device &middot;
+        Made with ❤️ 🇬🇧 &middot; v0.6.1 &middot; 100% private, all data stays on your device &middot;
         <a href="https://github.com/ambr3/SeclusaCalendar" target="_blank" rel="noopener noreferrer">Open source</a> ·
         GPL v3
       </footer>
     </div>
 
-    <script src="js/app.js?v=3.0"></script>
+    <script src="js/app.js?v=3.1"></script>
   </body>
 </html>

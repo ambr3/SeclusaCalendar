@@ -14,11 +14,16 @@
     return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
   }
 
+  let storageWarned = false;
+
   function safeSet(key, value) {
     try {
       localStorage.setItem(key, value);
     } catch {
-      /* storage may be unavailable */
+      if (!storageWarned) {
+        storageWarned = true;
+        alert('Could not save your data (storage is full or unavailable). Changes may be lost — export a backup.');
+      }
     }
   }
 
@@ -256,6 +261,7 @@
   const APP_NAME_KEY = 'ambr3_calendar_appname';
   const HOLIDAY_COLOR = '#dc2626';
   const IMPORTANT_COLOR = '#f97316';
+  const STORAGE_MAX_BYTES = 4 * 1024 * 1024;
 
   function createInitialState() {
     return {
@@ -330,7 +336,15 @@
   }
 
   function saveEvents(state) {
-    safeSet(STORAGE_KEY, JSON.stringify(state.events));
+    const json = JSON.stringify(state.events);
+    if (json.length > STORAGE_MAX_BYTES) {
+      if (!storageWarned) {
+        storageWarned = true;
+        alert('Calendar is too large to save (over 4 MB). Export a backup and remove some events.');
+      }
+      return;
+    }
+    safeSet(STORAGE_KEY, json);
   }
 
   function loadHolidayPreference(state, COUNTRY_META, IMPORTANT_DATES_META) {
@@ -1792,7 +1806,7 @@
     URL.revokeObjectURL(url);
   }
 
-  function exportJson(state) {
+  function jsonExportContent(state) {
     const data = {
       version: 3,
       exported: new Date().toISOString(),
@@ -1804,9 +1818,13 @@
         lang: state.lang,
       },
     };
+    return JSON.stringify(data, null, 2);
+  }
+
+  function defaultExportName(kind) {
     const date = new Date();
     const stamp = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    downloadBlob(JSON.stringify(data, null, 2), 'application/json', `seclusa-calendar-${stamp}.json`);
+    return `seclusa-calendar-${stamp}.${kind === 'ics' ? 'ics' : 'json'}`;
   }
 
   function icsDateStr(d) {
@@ -1828,7 +1846,7 @@
     });
   }
 
-  function exportIcs(state) {
+  function icsExportContent(state) {
     const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Seclusa Calendar//EN', 'CALSCALE:GREGORIAN'];
     for (const [key, evs] of Object.entries(state.events)) {
       for (const ev of evs) {
@@ -1875,9 +1893,101 @@
       }
     }
     lines.push('END:VCALENDAR');
-    const date = new Date();
-    const stamp = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    downloadBlob(lines.join('\r\n') + '\r\n', 'text/calendar', `seclusa-calendar-${stamp}.ics`);
+    return lines.join('\r\n') + '\r\n';
+  }
+
+  function fsApiSupported() {
+    return typeof window !== 'undefined' && typeof window.showSaveFilePicker === 'function';
+  }
+
+  function openExportDb() {
+    return new Promise((resolve, reject) => {
+      if (typeof window === 'undefined' || !window.indexedDB) {
+        reject(new Error('IndexedDB unavailable'));
+        return;
+      }
+      const req = window.indexedDB.open('seclusa-calendar-export', 1);
+      req.onupgradeneeded = () => {
+        if (!req.result.objectStoreNames.contains('handles')) req.result.createObjectStore('handles');
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function idbGet(kind) {
+    return openExportDb()
+      .then((db) => new Promise((resolve, reject) => {
+        const tx = db.transaction('handles', 'readonly');
+        const r = tx.objectStore('handles').get(kind);
+        r.onsuccess = () => resolve(r.result || null);
+        r.onerror = () => reject(r.error);
+      }))
+      .catch(() => null);
+  }
+
+  function idbPut(kind, handle) {
+    return openExportDb()
+      .then((db) => new Promise((resolve, reject) => {
+        const tx = db.transaction('handles', 'readwrite');
+        tx.objectStore('handles').put(handle, kind);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      }))
+      .catch(() => {});
+  }
+
+  function writeExportFile(handle, content) {
+    return handle.createWritable().then((writable) => writable.write(content).then(() => writable.close()));
+  }
+
+  async function saveExportFile(kind, content, suggestedName, mime) {
+    if (fsApiSupported()) {
+      const stored = await idbGet(kind);
+      if (stored) {
+        let perm = 'prompt';
+        try {
+          perm = await stored.queryPermission({ mode: 'readwrite' });
+        } catch {
+        }
+        if (perm !== 'granted') {
+          try {
+            perm = await stored.requestPermission({ mode: 'readwrite' });
+          } catch {
+            perm = 'denied';
+          }
+        }
+        if (perm === 'granted') {
+          try {
+            await writeExportFile(stored, content);
+            return true;
+          } catch {
+          }
+        }
+      }
+      const ext = kind === 'ics' ? '.ics' : '.json';
+      const types = [{ description: kind === 'ics' ? 'iCalendar' : 'Seclusa backup', accept: { [mime]: [ext] } }];
+      try {
+        const handle = await window.showSaveFilePicker({ suggestedName, types, id: 'seclusa-export' });
+        await idbPut(kind, handle);
+        await writeExportFile(handle, content);
+        return true;
+      } catch (err) {
+        if (!(err && err.name === 'AbortError')) downloadBlob(content, mime, suggestedName);
+        return true;
+      }
+    } else {
+      downloadBlob(content, mime, suggestedName);
+    }
+    return true;
+  }
+
+  function exportJson(state) {
+    return saveExportFile('json', jsonExportContent(state), defaultExportName('json'), 'application/json');
+  }
+
+  function exportIcs(state) {
+    return saveExportFile('ics', icsExportContent(state), defaultExportName('ics'), 'text/calendar');
   }
 
   function importIcs(state, onDone, text) {
@@ -3067,6 +3177,39 @@
     document.getElementById('settings-modal').classList.add('hidden');
   }
 
+  const DATA_KEYS = [STORAGE_KEY, HOLIDAYS_STORAGE_KEY, THEME_KEY, SETTINGS_KEY, ACCENT_COLOR_KEY, APP_NAME_KEY];
+
+  function clearAllData() {
+    if (
+      !confirm(
+        'Permanently delete ALL data on this device (events, holidays, countdowns, settings, theme, app name, remembered export location)?\n\nThis cannot be undone. Export a backup first if you need one.',
+      )
+    ) {
+      return;
+    }
+    for (const k of DATA_KEYS) {
+      try {
+        localStorage.removeItem(k);
+      } catch {
+        /* key already gone or storage unavailable */
+      }
+    }
+    if ('caches' in window) {
+      caches
+        .keys()
+        .then((ks) => Promise.all(ks.map((k) => caches.delete(k))))
+        .catch(() => {});
+    }
+    if ('indexedDB' in window) {
+      try {
+        indexedDB.deleteDatabase('seclusa-calendar-export');
+      } catch {
+        /* database may already be gone */
+      }
+    }
+    window.location.reload();
+  }
+
   // ===== SEARCH =====
   function openSearch() {
     document.getElementById('search-overlay').classList.remove('hidden');
@@ -3448,6 +3591,7 @@
       openSettings(state);
       document.getElementById('import-file').click();
     });
+    document.getElementById('clear-all-data-btn').addEventListener('click', clearAllData);
     document.getElementById('export-btn').addEventListener('click', () => exportJson(state));
     document.getElementById('import-btn').addEventListener('click', () => {
       document.getElementById('import-file').click();
@@ -3575,6 +3719,9 @@
       IMPORTANT_DATES_META,
       icsEscape,
       icsUnescape,
+      jsonExportContent,
+      icsExportContent,
+      defaultExportName,
       PRESET_COUNTDOWNS,
       getEasterKey,
       nextAnnualDate,

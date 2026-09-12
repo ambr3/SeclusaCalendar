@@ -1,8 +1,8 @@
 {
   "name": "Seclusa Calendar",
-  "short_name": "Seclusa",
+  "short_name": "Calendar",
   "id": "seclusa-calendar",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "lang": "en",
   "dir": "ltr",
   "description": "A 100% private calendar. All data stays on your device — no accounts, no servers, no tracking.",

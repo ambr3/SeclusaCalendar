@@ -16,7 +16,6 @@
   <a href="https://github.com/ambr3/SeclusaCalendar/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/ambr3/SeclusaCalendar"></a>
   <img alt="Vanilla JS" src="https://img.shields.io/badge/built%20with-vanilla%20JS-f7df1e.svg">
   <img alt="PWA" src="https://img.shields.io/badge/PWA-installable-6cb5e6.svg">
-  <img alt="Tests" src="https://img.shields.io/badge/tests-45%20passing-6cb5e6.svg">
 </p>
 
 
@@ -88,7 +87,7 @@ Your data is your business. That's the whole point.
 | 🧭 **No geolocation** | The app never asks for it; Permissions-Policy disables it |
 | 🔔 **Notifications opt-in** | Reminder alerts only after you grant permission — off by default |
 | 🛡️ **Locked-down security** | Camera, microphone, motion sensors, and payment are all blocked |
-| 🖼️ **Can't be embedded** | Best-effort clickjacking protection; a sample `.htaccess` sends `X-Frame-Options: DENY` on Apache |
+| 🖼️ **Can't be embedded** | Best-effort clickjacking protection; the shipped `.htaccess`/`_headers` send `X-Frame-Options: DENY` and a `frame-ancestors 'none'` CSP |
 | 📜 **Open source** | GPL-3.0 — read every line |
 
 
