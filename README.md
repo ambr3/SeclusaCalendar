@@ -7,6 +7,11 @@
 
 
 <p align="center">
+  <em>Seclusa — from the Latin meaning "private", "secluded", or "set apart" — keeps your calendar your own.</em>
+</p>
+
+
+<p align="center">
   <em>A privacy-first calendar PWA — zero tracking, no accounts, no servers.</em>
 </p>
 
@@ -30,7 +35,7 @@
 ---
 
 
-*Seclusa* — from the Latin meaning "private", "secluded", or "set apart" — keeps your calendar your own. Seclusa Calendar is a **pure static, open-source calendar app**. Everything runs in your browser: your events, settings, and preferences live only on your device's localStorage, and the app **cannot make a single network request** (its Content-Security-Policy sets `connect-src 'none'`). Installable, offline-capable, and auditable end-to-end.
+Seclusa Calendar is a **pure static, open-source calendar app**. Everything runs in your browser: your events, settings, and preferences live only on your device's localStorage, and the app **cannot make a single network request** (its Content-Security-Policy sets `connect-src 'none'`). Installable, offline-capable, and auditable end-to-end.
 
 
 ---
