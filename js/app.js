@@ -3177,7 +3177,15 @@
     document.getElementById('settings-modal').classList.add('hidden');
   }
 
-  const DATA_KEYS = [STORAGE_KEY, HOLIDAYS_STORAGE_KEY, THEME_KEY, SETTINGS_KEY, ACCENT_COLOR_KEY, APP_NAME_KEY];
+  const DATA_KEYS = [
+    STORAGE_KEY,
+    HOLIDAYS_STORAGE_KEY,
+    THEME_KEY,
+    SETTINGS_KEY,
+    ACCENT_COLOR_KEY,
+    APP_NAME_KEY,
+    COUNTDOWN_STORAGE_KEY,
+  ];
 
   function clearAllData() {
     if (
@@ -3248,6 +3256,29 @@
         }
       }
     }
+    const seenHolidayKeys = new Set();
+    for (const code of state.selectedCountries) {
+      const table = state.allCountryHolidays && state.allCountryHolidays[code];
+      if (!table) continue;
+      for (const [key, name] of Object.entries(table)) {
+        if (!name.toLowerCase().includes(needle)) continue;
+        const dedupe = code + ':' + key;
+        if (seenHolidayKeys.has(dedupe)) continue;
+        seenHolidayKeys.add(dedupe);
+        matches.push({ key, ev: { title: name, color: HOLIDAY_COLOR, holiday: true } });
+      }
+    }
+    if (state.importantDatesData) {
+      for (const id of state.enabledImportantDates) {
+        const table = state.importantDatesData[id];
+        if (!table) continue;
+        for (const [key, name] of Object.entries(table)) {
+          if (!name.toLowerCase().includes(needle)) continue;
+          matches.push({ key, ev: { title: name, color: IMPORTANT_COLOR, important: true } });
+        }
+      }
+    }
+    matches.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
     if (matches.length === 0) {
       res.innerHTML = '';
       empty.textContent = 'No matching events';

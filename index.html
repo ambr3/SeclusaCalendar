@@ -8,6 +8,11 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; font-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'; worker-src 'self'"
     />
+    <!--
+      Note: frame-ancestors / upgrade-insecure-requests are IGNORED in <meta> CSP.
+      They are enforced only via HTTP headers (_headers / .htaccess). The meta
+      CSP omits upgrade-insecure-requests on purpose so it isn't misleading.
+    -->
     <meta name="referrer" content="no-referrer" />
     <meta
       http-equiv="Permissions-Policy"
@@ -24,7 +29,7 @@
     <link rel="manifest" href="manifest.json" />
     <link rel="icon" href="icon-192.png" type="image/png" />
     <link rel="apple-touch-icon" href="icon-192.png" />
-    <link rel="stylesheet" href="css/theme.css?v=25" />
+    <link rel="stylesheet" href="css/theme.css?v=26" />
   </head>
   <body>
     <div id="app">
@@ -52,31 +57,29 @@
       </header>
 
       <div id="toolbar">
-        <div class="toolbar-left">
-          <button id="holidays-btn" title="Holidays &amp; Important Dates">
+        <div class="toolbar-actions">
+          <button id="holidays-btn" class="toolbar-pill" title="Holidays &amp; Important Dates">
             <span class="toolbar-icon">&#127760;</span>
             <span class="toolbar-label">Holidays</span>
           </button>
-          <button id="countdowns-btn" title="Countdowns">
+          <button id="countdowns-btn" class="toolbar-pill" title="Countdowns">
             <span class="toolbar-icon">&#9203;</span>
             <span class="toolbar-label">Countdowns</span>
           </button>
-          <button id="birthdays-btn" title="Birthdays">
+          <button id="birthdays-btn" class="toolbar-pill" title="Birthdays">
             <span class="toolbar-icon">&#127874;</span>
             <span class="toolbar-label">Birthdays</span>
           </button>
-          <div class="view-switch" role="tablist" aria-label="Calendar view">
-            <button class="view-btn active" data-view="month" role="tab" aria-selected="true">Month</button>
-            <button class="view-btn" data-view="week" role="tab" aria-selected="false">Week</button>
-            <button class="view-btn" data-view="year" role="tab" aria-selected="false">Year</button>
-          </div>
-        </div>
-        <div class="toolbar-actions">
           <button id="search-btn" title="Search events" aria-label="Search events">&#128269;</button>
           <button id="settings-btn" title="Settings" aria-label="Settings">&#9881;</button>
           <button id="export-btn" title="Export" aria-label="Export events">&#8681;</button>
           <button id="import-btn" title="Import" aria-label="Import events">&#8682;</button>
           <input type="file" id="import-file" accept=".json,.ics,text/calendar" class="hidden" />
+          <div class="view-switch" role="tablist" aria-label="Calendar view">
+            <button class="view-btn active" data-view="month" role="tab" aria-selected="true">Month</button>
+            <button class="view-btn" data-view="week" role="tab" aria-selected="false">Week</button>
+            <button class="view-btn" data-view="year" role="tab" aria-selected="false">Year</button>
+          </div>
         </div>
       </div>
 
@@ -439,12 +442,12 @@
       </div>
 
       <footer id="privacy-note">
-        Made with ❤️ 🇬🇧 &middot; v0.6.1 &middot; 100% private, all data stays on your device &middot;
+        Made with ❤️ 🇬🇧 &middot; v0.6.2 &middot; 100% private, all data stays on your device &middot;
         <a href="https://github.com/ambr3/SeclusaCalendar" target="_blank" rel="noopener noreferrer">Open source</a> ·
         GPL v3
       </footer>
     </div>
 
-    <script src="js/app.js?v=3.1"></script>
+    <script src="js/app.js?v=3.2"></script>
   </body>
 </html>

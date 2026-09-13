@@ -1,4 +1,4 @@
-const CACHE_NAME = 'seclusa-calendar-v5';
+const CACHE_NAME = 'seclusa-calendar-v6';
 const BASE = self.location.pathname.replace(/\/[^/]*$/, '/');
 const ASSETS = [
   BASE,
