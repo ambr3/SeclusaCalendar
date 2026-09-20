@@ -559,6 +559,51 @@
     return d.getDate();
   }
 
+  function buildClockChanges(year, dst) {
+    if (!dst) return {};
+    const h = {};
+    if (dst === 'eu') {
+      const spring = lastWeekdayOfMonth(year, 2, 0);
+      const autumn = lastWeekdayOfMonth(year, 9, 0);
+      h[dateKey(year, 2, spring)] = 'Clocks go forward';
+      h[dateKey(year, 9, autumn)] = 'Clocks go back';
+    } else if (dst === 'us') {
+      const spring = nthWeekdayOfMonth(year, 2, 0, 2);
+      const autumn = nthWeekdayOfMonth(year, 10, 0, 1);
+      h[dateKey(year, 2, spring)] = 'Clocks go forward';
+      h[dateKey(year, 10, autumn)] = 'Clocks go back';
+    } else if (dst === 'nz') {
+      const spring = lastWeekdayOfMonth(year, 8, 0);
+      const autumn = nthWeekdayOfMonth(year, 3, 0, 1);
+      h[dateKey(year, 8, spring)] = 'Clocks go forward';
+      h[dateKey(year, 3, autumn)] = 'Clocks go back';
+    }
+    return h;
+  }
+
+  const DST_RULES = {
+    uk: 'eu',
+    ie: 'eu',
+    fr: 'eu',
+    de: 'eu',
+    es: 'eu',
+    pt: 'eu',
+    it: 'eu',
+    nl: 'eu',
+    be: 'eu',
+    ch: 'eu',
+    at: 'eu',
+    se: 'eu',
+    no: 'eu',
+    dk: 'eu',
+    fi: 'eu',
+    pl: 'eu',
+    gr: 'eu',
+    us: 'us',
+    ca: 'us',
+    nz: 'nz',
+  };
+
   const WORLD_HOLIDAYS_DATA = {
     uk: {
       fixed: {
@@ -567,6 +612,7 @@
         '03-17': "St Patrick's Day",
         '04-23': "St George's Day",
         '07-12': 'Battle of the Boyne',
+        '11-05': 'Bonfire Night',
         '12-25': 'Christmas Day',
         '12-26': 'Boxing Day',
       },
@@ -1524,6 +1570,10 @@
         }
         if (data.computed) {
           Object.assign(allCountryHolidays[code], data.computed(y));
+        }
+        const dst = data.dst || DST_RULES[code];
+        if (dst) {
+          Object.assign(allCountryHolidays[code], buildClockChanges(y, dst));
         }
       }
     }

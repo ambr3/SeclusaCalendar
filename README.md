@@ -59,8 +59,8 @@ Seclusa Calendar is a **pure static, open-source calendar app**. Everything runs
 - **Reminders** — optional browser notifications before an event (opt-in in Settings)
 
 
-### 🌍 Holidays & Dates
-- **Holidays** — toggle countries (UK, US, Canada, Ireland, Germany, France, Spain, Italy, Netherlands, Belgium, Switzerland, Austria, Portugal, China, South Korea, India, Brazil …) from the Holidays panel
+### 🌍 Public Dates
+- **Country holidays** — toggle countries (UK, US, Canada, Ireland, Germany, France, Spain, Italy, Netherlands, Belgium, Switzerland, Austria, Portugal, China, South Korea, India, Brazil …) from the Public Dates panel
 - **Special dates** — Valentine's, Halloween, Mother's/Father's Day, New Year's Eve and more
 - **Search** — find events and holidays instantly across your calendar
 
