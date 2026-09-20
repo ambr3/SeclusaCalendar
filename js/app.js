@@ -1660,7 +1660,7 @@
     const holidays = [];
     for (const code of state.selectedCountries) {
       if (state.allCountryHolidays[code] && state.allCountryHolidays[code][key]) {
-        holidays.push({ name: state.allCountryHolidays[countryKey][key], country: COUNTRY_META[code]?.name || code });
+        holidays.push({ name: state.allCountryHolidays[code][key], country: COUNTRY_META[code]?.name || code });
       }
     }
     for (const id of state.enabledImportantDates) {
@@ -2315,7 +2315,7 @@
     document.getElementById('week-view').classList.add('hidden');
     document.getElementById('year-view').classList.add('hidden');
 
-    weekdayHeader.replaceChildren();
+    weekdayHeader.textContent = '';
     daysOrder().forEach((d) => {
       const span = document.createElement('span');
       span.textContent = dayName(d);
@@ -2330,7 +2330,7 @@
     const todayKey = getTodayKey();
     const lead = (firstDay - state.weekStart + 7) % 7;
 
-    daysGrid.replaceChildren();
+    daysGrid.textContent = '';
 
     const cells = [];
     for (let i = lead - 1; i >= 0; i--) {
@@ -2395,7 +2395,7 @@
     document.getElementById('month-events-list').classList.add('hidden');
     const wk = document.getElementById('week-view');
     wk.classList.remove('hidden');
-    wk.replaceChildren();
+    wk.textContent = '';
 
     const todayKey = getTodayKey();
     const start = startOfWeek(state.currentDate);
@@ -2498,7 +2498,7 @@
     document.getElementById('month-events-list').classList.add('hidden');
     const yv = document.getElementById('year-view');
     yv.classList.remove('hidden');
-    yv.replaceChildren();
+    yv.textContent = '';
 
     const year = state.currentDate.getFullYear();
     const todayKey = getTodayKey();
@@ -2558,7 +2558,7 @@
   function renderMonthEventsList(state, helpers) {
     const { monthName, dayName, formatShortDate } = helpers;
     const el = document.getElementById('month-events-list');
-    el.replaceChildren();
+    el.textContent = '';
 
     const year = state.currentDate.getFullYear();
     const month = state.currentDate.getMonth();
@@ -2663,7 +2663,7 @@
 
     const eventsList = document.getElementById('events-list');
     const dayEvents = getEventsForKey(state, key);
-    eventsList.replaceChildren();
+    eventsList.textContent = '';
 
     if (dayEvents.length === 0) {
       const p = document.createElement('p');
@@ -2946,7 +2946,7 @@
 
   function renderCountryList(state, helpers) {
     const container = document.getElementById('holidays-country-list');
-    container.replaceChildren();
+    container.textContent = '';
     for (const [code, meta] of Object.entries(COUNTRY_META)) {
       const item = document.createElement('label');
       item.className = 'country-item';
@@ -2980,7 +2980,7 @@
 
   function renderImportantDatesList(state, helpers) {
     const container = document.getElementById('important-dates-toggles');
-    container.replaceChildren();
+    container.textContent = '';
     for (const [id, meta] of Object.entries(IMPORTANT_DATES_META)) {
       const item = document.createElement('label');
       item.className = 'important-date-item';
@@ -3018,8 +3018,8 @@
     const todayKey = getTodayKey();
     const presets = document.getElementById('countdown-presets-list');
     const customs = document.getElementById('countdown-custom-list');
-    presets.replaceChildren();
-    customs.replaceChildren();
+    presets.textContent = '';
+    customs.textContent = '';
 
     for (const preset of PRESET_COUNTDOWNS) {
       const next = resolvePresetNextDate(preset, todayKey);
@@ -3106,7 +3106,7 @@
     const todayKey = getTodayKey();
     const list = document.getElementById('birthdays-list');
     const emptyEl = document.getElementById('birthdays-empty');
-    list.replaceChildren();
+    list.textContent = '';
     const bdays = collectBirthdays(state, todayKey);
     emptyEl.textContent = bdays.length
       ? ''
@@ -3269,7 +3269,7 @@
     const empty = document.createElement('div');
     empty.className = 'search-empty';
     empty.textContent = 'Type to search your events';
-    res.replaceChildren();
+    res.textContent = '';
     res.appendChild(empty);
     setTimeout(() => inp.focus(), 50);
   }
@@ -3285,7 +3285,7 @@
     const empty = document.createElement('div');
     empty.className = 'search-empty';
     if (!needle) {
-      res.replaceChildren();
+      res.textContent = '';
       empty.textContent = 'Type to search your events';
       res.appendChild(empty);
       return;
@@ -3322,12 +3322,12 @@
     }
     matches.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
     if (matches.length === 0) {
-      res.replaceChildren();
+      res.textContent = '';
       empty.textContent = 'No matching events';
       res.appendChild(empty);
       return;
     }
-    res.replaceChildren();
+    res.textContent = '';
     matches.slice(0, 50).forEach(({ key, ev }) => {
       const d = parseDateKey(key);
       const item = document.createElement('div');
@@ -3361,7 +3361,7 @@
   function buildJumpOptions(state, helpers) {
     const { monthName } = helpers;
     const m = document.getElementById('jump-month');
-    m.replaceChildren();
+    m.textContent = '';
     for (let i = 0; i < 12; i++) {
       const opt = document.createElement('option');
       opt.value = String(i);
@@ -3370,7 +3370,7 @@
     }
     const y = document.getElementById('jump-year');
     const yr = state.currentDate.getFullYear();
-    y.replaceChildren();
+    y.textContent = '';
     for (let i = yr - 10; i <= yr + 10; i++) {
       const opt = document.createElement('option');
       opt.value = String(i);
@@ -3459,7 +3459,7 @@
       sr: '\u0421\u0440\u043f\u0441\u043a\u0438',
       'sr-lat': 'Srpski',
     };
-    ls.replaceChildren();
+    ls.textContent = '';
     Object.keys(LANGS).forEach((c) => {
       const opt = document.createElement('option');
       opt.value = c;
