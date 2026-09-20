@@ -6,7 +6,7 @@
     <meta name="description" content="Seclusa Calendar — a privacy-friendly calendar. All data stays on your device." />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; font-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'; worker-src 'self'"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; font-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'; worker-src 'self'; require-trusted-types-for 'script'"
     />
     <!--
       Note: frame-ancestors / upgrade-insecure-requests are IGNORED in <meta> CSP.
@@ -29,7 +29,7 @@
     <link rel="manifest" href="manifest.json" />
     <link rel="icon" href="icon-192.png" type="image/png" />
     <link rel="apple-touch-icon" href="icon-192.png" />
-    <link rel="stylesheet" href="css/theme.css?v=27" />
+    <link rel="stylesheet" href="css/theme.css?v=28" />
   </head>
   <body>
     <div id="app">
@@ -442,12 +442,12 @@
       </div>
 
       <footer id="privacy-note">
-        Made with ❤️ 🇬🇧 &middot; v0.6.3 &middot; 100% private, all data stays on your device &middot;
+        Made with ❤️ 🇬🇧 &middot; v0.6.4 &middot; 100% private, all data stays on your device &middot;
         <a href="https://github.com/ambr3/SeclusaCalendar" target="_blank" rel="noopener noreferrer">Open source</a> ·
         GPL v3
       </footer>
     </div>
 
-    <script src="js/app.js?v=3.3"></script>
+    <script src="js/app.js?v=3.4"></script>
   </body>
 </html>

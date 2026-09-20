@@ -794,11 +794,7 @@
         '08-15': 'Independence Day',
         '10-02': 'Gandhi Jayanti',
       },
-      computed(year) {
-        const h = {};
-        h[dateKey(year, 0, nthWeekdayOfMonth(year, 0, 1, 4) || 26)] = 'Republic Day';
-        return h;
-      },
+      computed: null,
     },
     br: {
       fixed: {
@@ -1663,8 +1659,7 @@
   function getHolidaysForKey(state, key) {
     const holidays = [];
     for (const code of state.selectedCountries) {
-      const countryKey = code === 'in_' ? 'in_' : code;
-      if (state.allCountryHolidays[countryKey] && state.allCountryHolidays[countryKey][key]) {
+      if (state.allCountryHolidays[code] && state.allCountryHolidays[code][key]) {
         holidays.push({ name: state.allCountryHolidays[countryKey][key], country: COUNTRY_META[code]?.name || code });
       }
     }
@@ -1802,11 +1797,7 @@
   }
 
   function formatNotificationTime(t) {
-    if (!t) return '';
-    const [h, m] = t.split(':').map(Number);
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    const hour = h % 12 || 12;
-    return `${hour}:${String(m).padStart(2, '0')} ${ampm}`;
+    return formatTime(t);
   }
 
   function checkReminders(state) {
@@ -2324,7 +2315,7 @@
     document.getElementById('week-view').classList.add('hidden');
     document.getElementById('year-view').classList.add('hidden');
 
-    weekdayHeader.innerHTML = '';
+    weekdayHeader.replaceChildren();
     daysOrder().forEach((d) => {
       const span = document.createElement('span');
       span.textContent = dayName(d);
@@ -2339,7 +2330,7 @@
     const todayKey = getTodayKey();
     const lead = (firstDay - state.weekStart + 7) % 7;
 
-    daysGrid.innerHTML = '';
+    daysGrid.replaceChildren();
 
     const cells = [];
     for (let i = lead - 1; i >= 0; i--) {
@@ -2404,7 +2395,7 @@
     document.getElementById('month-events-list').classList.add('hidden');
     const wk = document.getElementById('week-view');
     wk.classList.remove('hidden');
-    wk.innerHTML = '';
+    wk.replaceChildren();
 
     const todayKey = getTodayKey();
     const start = startOfWeek(state.currentDate);
@@ -2507,7 +2498,7 @@
     document.getElementById('month-events-list').classList.add('hidden');
     const yv = document.getElementById('year-view');
     yv.classList.remove('hidden');
-    yv.innerHTML = '';
+    yv.replaceChildren();
 
     const year = state.currentDate.getFullYear();
     const todayKey = getTodayKey();
@@ -2567,7 +2558,7 @@
   function renderMonthEventsList(state, helpers) {
     const { monthName, dayName, formatShortDate } = helpers;
     const el = document.getElementById('month-events-list');
-    el.innerHTML = '';
+    el.replaceChildren();
 
     const year = state.currentDate.getFullYear();
     const month = state.currentDate.getMonth();
@@ -2666,12 +2657,13 @@
     state.selectedDate = key;
     const d = parseDateKey(key);
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const locales = { en: 'en-GB', fr: 'fr-FR', de: 'de-DE', es: 'es-ES', it: 'it-IT', nl: 'nl-NL', pt: 'pt-PT', tr: 'tr-TR', sr: 'sr', 'sr-lat': 'sr-Latn' };
     const panelDate = document.getElementById('panel-date');
-    panelDate.textContent = d.toLocaleDateString('en-GB', options);
+    panelDate.textContent = d.toLocaleDateString(locales[state.lang] || 'en-GB', options);
 
     const eventsList = document.getElementById('events-list');
     const dayEvents = getEventsForKey(state, key);
-    eventsList.innerHTML = '';
+    eventsList.replaceChildren();
 
     if (dayEvents.length === 0) {
       const p = document.createElement('p');
@@ -2954,7 +2946,7 @@
 
   function renderCountryList(state, helpers) {
     const container = document.getElementById('holidays-country-list');
-    container.innerHTML = '';
+    container.replaceChildren();
     for (const [code, meta] of Object.entries(COUNTRY_META)) {
       const item = document.createElement('label');
       item.className = 'country-item';
@@ -2988,7 +2980,7 @@
 
   function renderImportantDatesList(state, helpers) {
     const container = document.getElementById('important-dates-toggles');
-    container.innerHTML = '';
+    container.replaceChildren();
     for (const [id, meta] of Object.entries(IMPORTANT_DATES_META)) {
       const item = document.createElement('label');
       item.className = 'important-date-item';
@@ -3026,8 +3018,8 @@
     const todayKey = getTodayKey();
     const presets = document.getElementById('countdown-presets-list');
     const customs = document.getElementById('countdown-custom-list');
-    presets.innerHTML = '';
-    customs.innerHTML = '';
+    presets.replaceChildren();
+    customs.replaceChildren();
 
     for (const preset of PRESET_COUNTDOWNS) {
       const next = resolvePresetNextDate(preset, todayKey);
@@ -3114,7 +3106,7 @@
     const todayKey = getTodayKey();
     const list = document.getElementById('birthdays-list');
     const emptyEl = document.getElementById('birthdays-empty');
-    list.innerHTML = '';
+    list.replaceChildren();
     const bdays = collectBirthdays(state, todayKey);
     emptyEl.textContent = bdays.length
       ? ''
@@ -3277,7 +3269,7 @@
     const empty = document.createElement('div');
     empty.className = 'search-empty';
     empty.textContent = 'Type to search your events';
-    res.innerHTML = '';
+    res.replaceChildren();
     res.appendChild(empty);
     setTimeout(() => inp.focus(), 50);
   }
@@ -3293,7 +3285,7 @@
     const empty = document.createElement('div');
     empty.className = 'search-empty';
     if (!needle) {
-      res.innerHTML = '';
+      res.replaceChildren();
       empty.textContent = 'Type to search your events';
       res.appendChild(empty);
       return;
@@ -3330,12 +3322,12 @@
     }
     matches.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
     if (matches.length === 0) {
-      res.innerHTML = '';
+      res.replaceChildren();
       empty.textContent = 'No matching events';
       res.appendChild(empty);
       return;
     }
-    res.innerHTML = '';
+    res.replaceChildren();
     matches.slice(0, 50).forEach(({ key, ev }) => {
       const d = parseDateKey(key);
       const item = document.createElement('div');
@@ -3369,7 +3361,7 @@
   function buildJumpOptions(state, helpers) {
     const { monthName } = helpers;
     const m = document.getElementById('jump-month');
-    m.innerHTML = '';
+    m.replaceChildren();
     for (let i = 0; i < 12; i++) {
       const opt = document.createElement('option');
       opt.value = String(i);
@@ -3378,7 +3370,7 @@
     }
     const y = document.getElementById('jump-year');
     const yr = state.currentDate.getFullYear();
-    y.innerHTML = '';
+    y.replaceChildren();
     for (let i = yr - 10; i <= yr + 10; i++) {
       const opt = document.createElement('option');
       opt.value = String(i);
@@ -3467,7 +3459,7 @@
       sr: '\u0421\u0440\u043f\u0441\u043a\u0438',
       'sr-lat': 'Srpski',
     };
-    ls.innerHTML = '';
+    ls.replaceChildren();
     Object.keys(LANGS).forEach((c) => {
       const opt = document.createElement('option');
       opt.value = c;

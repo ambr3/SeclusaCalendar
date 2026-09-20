@@ -1,4 +1,4 @@
-const CACHE_NAME = 'seclusa-calendar-v7';
+const CACHE_NAME = 'seclusa-calendar-v8';
 const BASE = self.location.pathname.replace(/\/[^/]*$/, '/');
 const ASSETS = [
   BASE,
@@ -33,6 +33,16 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
+
+  let fromSelf = false;
+  try {
+    fromSelf = new URL(req.url).origin === self.location.origin;
+  } catch (_) {
+  }
+  if (!fromSelf) {
+    e.respondWith(Response.error());
+    return;
+  }
 
   const offlineFallback = caches.match(req).then(cached => {
     if (cached) return cached;
